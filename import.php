@@ -12,9 +12,9 @@ if ( ! file_exists( FILE_TO_IMPORT ) ) :
 endif;	
 
 $woocommerce = new Client(
-    'https://gigacomputers.com.ec/', 
-    'ck_de42de41d657f45dcaded014e5f55bc01fa15a7b', 
-    'cs_30338af0cbab351ff84d5de9e1439e197bf844f0',
+    'https://yourwebsite.com/', 
+    'ck_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 
+    'cs_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     [
         'version' => 'wc/v3',
     ]
@@ -191,8 +191,8 @@ function status_message( $message ) {
 }
 
 function get_products_from_API_REST() {
-    //$url="http://localhost:8086/RestaurantServer/api/productos/getAll";
-    $url="http://localhost:8086/RestaurantServer/api/productos/getByCategoria?idCategoria=5";
+    
+    $url="http://localhost/YourAPI";
     $client=curl_init($url);
     curl_setopt($client,CURLOPT_RETURNTRANSFER,1);
     $response=curl_exec($client);
