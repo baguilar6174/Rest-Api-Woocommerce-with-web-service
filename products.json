@@ -1,0 +1,50 @@
+[
+    {
+        "product_id": 100,
+        "type": "simple",
+        "name": "My product 1",
+        "description": "My product description 1",
+        "regular_price": 100,
+        "manage_stock": 1,
+        "stock": 3,
+        "sku": "54321",
+        "idcategory": 21,
+        "image": "https://www.ocado.com/productImages/627/62764011_0_640x640.jpg"
+  },
+    {
+        "product_id": 200,
+        "type": "simple",
+        "name": "My product 2",
+        "description": "My product description 2",
+        "regular_price": 320,
+        "manage_stock": 0,
+        "stock": 0,
+        "sku": "12345",
+        "idcategory": 45,
+        "image": "https://www.ocado.com/productImages/627/62764011_0_640x640.jpg"
+  },
+    {
+        "product_id": 672,
+        "sku": "8887777",
+        "description": "LOCO",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "LOCO",
+        "manage_stock": 1,
+        "idcategory": 21,
+        "regular_price": 0
+    },
+    {
+        "product_id": 756,
+        "sku": "8808992365549",
+        "description": "TELEVISOR LG 42\"LCD 1080P HDMI USB VGA-PC",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "TELEVISOR LG 42\"LCD 1080P HDMI USB VGA-PC",
+        "manage_stock": 1,
+        "idcategory": 45,
+        "regular_price": 965
+    }
+]

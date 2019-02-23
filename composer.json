@@ -1,0 +1,14 @@
+{
+    "name": "vendor/productos",
+    "description": "productos",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Bryan Aguilar",
+            "email": "bryanaguilar.expectro@gmail.com"
+        }
+    ],
+    "require": {
+        "automattic/woocommerce": "^3.0"
+    }
+}
