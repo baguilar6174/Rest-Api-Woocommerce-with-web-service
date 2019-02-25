@@ -9,9 +9,9 @@ use Automattic\WooCommerce\HttpClient\HttpClientException;
 /*Configuración para la nueva integración de la API REST WooCommerce de  Wordpress:*/
 function getWoocommerceConfig(){
     $woocommerce = new Client(
-        'https://gigacomputers.com.ec/', 
-        'ck_de42de41d657f45dcaded014e5f55bc01fa15a7b', 
-        'cs_30338af0cbab351ff84d5de9e1439e197bf844f0',
+        'https://tusitioweb.com/', 
+        'ck_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 
+        'cs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
         [
             'version' => 'wc/v3',
         ]
@@ -135,7 +135,7 @@ function checkProductBySku($skuCode){
 function get_products_from_API_REST() {
     //$url="http://localhost:8086/RestaurantServer/api/productos/getAll";
     /*URL DEL SERVICIO WEB DE SPRING BOOT (EL SERVICIO DEBE ESTAR DISPONIBLE)*/
-    $url="http://localhost:8086/RestaurantServer/api/productos/getByCategoria?idCategoria=5";
+    $url="http://localhost/tuservicioweb";
     $client=curl_init($url);
     curl_setopt($client,CURLOPT_RETURNTRANSFER,1);
     $response=curl_exec($client);
