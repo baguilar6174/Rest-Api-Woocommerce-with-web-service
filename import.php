@@ -1,108 +1,73 @@
 <?php
 
-define( 'FILE_TO_IMPORT', 'products.json' );
-
 require __DIR__ . '/vendor/autoload.php';
 
 use Automattic\WooCommerce\Client;
 use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-if ( ! file_exists( FILE_TO_IMPORT ) ) :
-	die( 'Unable to find ' . FILE_TO_IMPORT );
-endif;	
 
-$woocommerce = new Client(
-    'https://yourwebsite.com/', 
-    'ck_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 
-    'cs_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    [
-        'version' => 'wc/v3',
-    ]
-);
-
+/*Configuración para la nueva integración de la API REST WooCommerce de  Wordpress:*/
+function getWoocommerceConfig(){
+    $woocommerce = new Client(
+        'https://gigacomputers.com.ec/', 
+        'ck_de42de41d657f45dcaded014e5f55bc01fa15a7b', 
+        'cs_30338af0cbab351ff84d5de9e1439e197bf844f0',
+        [
+            'version' => 'wc/v3',
+        ]
+    );
+    return $woocommerce;
+}
+    
+    
 try {
-
-    get_products_from_API_REST();  
+    $woocommerce = getWoocommerceConfig();
+    /*GENERO EL ARCHIVO DE PRODUCTOS QUE ME BRINDA EL SERVICIO WEB (API REST) DE GIGACOMPUTERS*/
+    //get_products_from_API_REST();  
     $json = parse_json('results.json');
-	$data = get_products_and_variations_from_json($json);
-	// Merge products and product variations so that we can loop through products, then its variations
-	$product_data = merge_products_and_variations( $data['products'], $data['product_variations'] );
-
-	// Import: Products
-	foreach ( $product_data as $k => $product ) :
-
-		if ( isset( $product['variations'] ) ) :
-			$_product_variations = $product['variations']; // temporary store variations array
-
-			// Unset and make the $product data correct for importing the product.
-			unset($product['variations']);
-		endif;		
-
-			$wc_product = $woocommerce->post( 'products', $product );
-
-			if ( $wc_product ) :
-				status_message( 'Product added. ID: '. $wc_product->id);
-			endif;
-
-		if ( isset( $_product_variations ) ) :
-			// Import: Product variations
-
-			// Loop through our temporary stored product variations array and add them
-			foreach ( $_product_variations as $variation ) :
-				$wc_variation = $woocommerce->post( 'products/'. $wc_product->id .'/variations', $variation );
-
-				if ( $wc_variation ) :
-					status_message( 'Product variation added. ID: '. $wc_variation->id . ' for product ID: ' . $wc_product->id );
-				endif;	
-			endforeach;	
-
-			// Don't need it anymore
-			unset($_product_variations);
-		endif;
-
-	endforeach;
+	$data = get_products_from_json($json);
+	$product_data = merge_products_and_variations($data['products']);
 	
-
+    echo('<p>IMPORTACION DE PROUCTOS CON WEB SERVICE DE GIGA (SPRING BOOT).<br><br></p>');
+    
+    
+    /*IMPORTAR PRODUCTOS DEL FICHERO*/
+	foreach ( $product_data as $k => $product ) :
+        
+        /*SE VERIFICA QUE EL PRODUCTO NO EXISTA EN LA BD DE LA PAGINA USANDO EL SKU (IDENTIFICADOR UNICO -> EN GIGA: CODIGO BARRAS)*/
+        $productExist = checkProductBySku($product['sku']);
+        if (!$productExist['exist']) {
+            /*SI EL PRODUCTO NI EXISTE EN LA PAGINA, SE AGREGA CON EL METODO POST*/
+            $wc_product = $woocommerce->post( 'products', $product );
+            if ( $wc_product ) :
+                /*SI SE AGREGA CORRECTAMENTE SE ENVIA UN MENSAJE DE OCNFIRMACION*/
+                echo('<p>PRODUCTO AGREGADO. ID: <b>'. $wc_product->id . '</b> SKU. : <b>'. $wc_product->sku .'</b></p>');
+            endif;
+        }else{
+            /*EN CASO DE QUE EL PRODUCTO CON SKU EXISTA, NO SE AGREGA A LA PAGINA*/
+            echo('<p>PRODUCTO CON SKU (CODIGO DE BARRAS) : <b>'. $product['sku'] . '</b> YA EXISTE EN LA BD DE LA PAGINA!!</p>');
+        }
+    
+	endforeach;
+    /*ELIMINO EL ARCHIVO GENERADO PARA LA PROXIMA OCASION*/
+    //unlink('results.json');
+	
 } catch ( HttpClientException $e ) {
-    echo $e->getMessage(); // Error message
+    echo $e->getMessage(); // MENSAJE DE ERROR DE LA API REST WOOCOMMERCE
 }
 
-/**
- * Merge products and variations together. 
- * Used to loop through products, then loop through product variations.
- *
- * @param  array $product_data
- * @param  array $product_variations_data
- * @return array
-*/
-function merge_products_and_variations( $product_data = array(), $product_variations_data = array() ) {
+/*Convertir array de productos en array necesario para API REST Woocommerce*/
+function merge_products_and_variations( $product_data = array()) {
 	foreach ( $product_data as $k => $product ) :
-		foreach ( $product_variations_data as $k2 => $product_variation ) :
-			if ( $product_variation['_parent_product_id'] == $product['_product_id'] ) :
-
-				// Unset merge key. Don't need it anymore
-				unset($product_variation['_parent_product_id']);
-
-				$product_data[$k]['variations'][] = $product_variation;
-
-			endif;
-		endforeach;
-
-		// Unset merge key. Don't need it anymore
+		/*NO NECESITAMOS EL ID, WOOCOMMERCE LO ASIGNA AUTOMATICAMENTE*/
 		unset($product_data[$k]['_product_id']);
 	endforeach;
 
 	return $product_data;
 }
 
-/**
- * Get products from JSON and make them ready to import according WooCommerce API properties. 
- *
- * @param  array $json
- * @param  array $added_attributes
- * @return array
-*/
-function get_products_and_variations_from_json( $json ) {
+/*Obtener productos de JSON y prepararlos para importar según las propiedades de la API de WooCommerce*/
+function get_products_from_json( $json ) {
 
 	$product = array();
 	$product_variations = array();
@@ -124,8 +89,7 @@ function get_products_and_variations_from_json( $json ) {
                 $product[$key]['categories'][] = array('id' => (int) $pre_product['idcategory'],'position' => 0);
             }
     
-    
-			// Stock
+			/*PARA EL STOCK*/
 			if ( $pre_product['stock'] > 0 ) :
 				$product[$key]['in_stock'] = (bool) true;
 				$product[$key]['stock_quantity'] = (int) $pre_product['stock'];    
@@ -138,40 +102,13 @@ function get_products_and_variations_from_json( $json ) {
 	endforeach;		
 
 	$data['products'] = $product;
-	$data['product_variations'] = $product_variations;
 
 	return $data;
-}	
-
-/**
- * Get attributes and terms from JSON.
- * Used to import product attributes.
- *
- * @param  array $json
- * @return array
-*/
-function get_attributes_from_json( $json ) {
-	$product_attributes = array();
-
-	foreach( $json as $key => $pre_product ) :
-		if ( !empty( $pre_product['attribute_name'] ) && !empty( $pre_product['attribute_value'] ) ) :
-			$product_attributes[$pre_product['attribute_name']]['terms'][] = $pre_product['attribute_value'];
-		endif;
-	endforeach;		
-
-	return $product_attributes;
-
 }
 
-/**
- * Parse JSON file.
- *
- * @param  string $file
- * @return array
-*/
+/*Convertir la cadena JSON a la matriz de PHP*/
 function parse_json( $file ) {
 	$json = json_decode( file_get_contents( $file ), true );
-
 	if ( is_array( $json ) && !empty( $json ) ) :
 		return $json;	
 	else :
@@ -180,24 +117,31 @@ function parse_json( $file ) {
 	endif;
 }
 
-/**
- * Print status message.
- *
- * @param  string $message
- * @return string
-*/
-function status_message( $message ) {
-	echo $message . "\r\n";
+/*Usar la API REST de Woocommerce para verificar si un producto existe en la pagina*/
+function checkProductBySku($skuCode){
+    $woocommerce = getWoocommerceConfig();
+    $products = $woocommerce->get('products');
+    foreach ($products as $product) {
+        $currentSku = strtolower($product->sku);
+        $skuCode = strtolower($skuCode);
+        if ($currentSku === $skuCode) {
+            return ['exist' => true, 'idProduct' => $product->id];
+        }
+    }
+    return ['exist' => false, 'idProduct' => null];
 }
 
+/*COnsumir el servicio web de Gigacomputers para obtener los productos de la base de datos*/
 function get_products_from_API_REST() {
-    
-    $url="http://localhost/YourAPI";
+    //$url="http://localhost:8086/RestaurantServer/api/productos/getAll";
+    /*URL DEL SERVICIO WEB DE SPRING BOOT (EL SERVICIO DEBE ESTAR DISPONIBLE)*/
+    $url="http://localhost:8086/RestaurantServer/api/productos/getByCategoria?idCategoria=5";
     $client=curl_init($url);
     curl_setopt($client,CURLOPT_RETURNTRANSFER,1);
     $response=curl_exec($client);
-    //echo $response;
+    /*SE CONVIERTE EL RESULTADO DE LA API REST DE SPRING EN FORMATO JSON PARA PHP*/
     $json = json_decode($response,true);
+    /*SE ALMACENA EN UN ARCHIVO .JSON*/
     $fp = fopen('results.json', 'w');
     fwrite($fp, json_encode($json));
     fclose($fp);

@@ -1,6 +1,10 @@
 <?php
-    //$url="http://localhost:8086/RestaurantServer/api/productos/getAll";
-    $url="http://localhost:8086/RestaurantServer/api/productos/getByCategoria?idCategoria=5";
+
+get_products_from_API_REST();
+
+function get_products_from_API_REST(){
+    $url="http://localhost:8086/RestaurantServer/api/productos/getAll";
+    //$url="http://localhost:8086/RestaurantServer/api/productos/getByCategoria?idCategoria=5";
     $client=curl_init($url);
     curl_setopt($client,CURLOPT_RETURNTRANSFER,1);
     $response=curl_exec($client);
@@ -9,4 +13,6 @@
     $fp = fopen('results.json', 'w');
     fwrite($fp, json_encode($json));
     fclose($fp);
+    //unlink('results.json');
+}
 ?>

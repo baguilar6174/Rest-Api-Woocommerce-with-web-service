@@ -1,0 +1,82 @@
+[
+    {
+        "product_id": 100,
+        "type": "simple",
+        "name": "My product 1",
+        "description": "My product description 1",
+        "regular_price": 100,
+        "manage_stock": 1,
+        "stock": 3,
+        "sku": "54321",
+        "idcategory": 21,
+        "image": "https://www.ocado.com/productImages/627/62764011_0_640x640.jpg"
+  },
+    {
+        "product_id": 2275,
+        "sku": "0500200013330",
+        "description": "RELOJ BIOMETRICO ANVIZ C2",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "RELOJ BIOMETRICO ANVIZ C2",
+        "manage_stock": 1,
+        "idcategory": 5,
+        "regular_price": 460
+}, {
+        "product_id": 2730,
+        "sku": "6572151600269",
+        "description": "RELOJ BIOMETRICO BIOTRACK BT-BTIME",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "RELOJ BIOMETRICO BIOTRACK BT-BTIME",
+        "manage_stock": 1,
+        "idcategory": 5,
+        "regular_price": 239
+}, {
+        "product_id": 2780,
+        "sku": "8806086503181",
+        "description": "SMARTWATCH SAMSUNG GEAR S",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "SMARTWATCH SAMSUNG GEAR S",
+        "manage_stock": 1,
+        "idcategory": 5,
+        "regular_price": 0
+}, {
+        "product_id": 2809,
+        "sku": "1000000001096",
+        "description": "RELOJ BIOMETRICO ANVIZ EP300",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "RELOJ BIOMETRICO ANVIZ EP300",
+        "manage_stock": 1,
+        "idcategory": 5,
+        "regular_price": 214
+}, {
+        "product_id": 3628,
+        "sku": "1000000001508",
+        "description": "RELOJ BIOMETRICO BIOTRACK BT-BCPLUS",
+        "image": null,
+        "stock": 0,
+        "type": "simple",
+        "name": "RELOJ BIOMETRICO BIOTRACK BT-BCPLUS",
+        "manage_stock": 1,
+        "idcategory": 5,
+        "regular_price": 800
+},
+    {
+        "product_id": 200,
+        "type": "simple",
+        "name": "My product 2",
+        "description": "My product description 2",
+        "regular_price": 320,
+        "manage_stock": 0,
+        "stock": 0,
+        "sku": "12345",
+        "idcategory": 45,
+        "image": "https://www.ocado.com/productImages/627/62764011_0_640x640.jpg"
+  }
+]
